@@ -2,6 +2,7 @@ import 'package:app_builder/config/loaded_app_data.dart';
 import 'package:app_builder/providers/connectivity_provider.dart';
 import 'package:app_builder/providers/posts_provider.dart';
 import 'package:app_builder/utilities/connectivity_status_enum.dart';
+import 'package:app_builder/utilities/view_state_enum.dart';
 import 'package:app_builder/widgets/card_widget.dart';
 import 'package:app_builder/widgets/connection_error.dart';
 import 'package:app_builder/widgets/menu_item_widget.dart';
@@ -40,7 +41,6 @@ class HomeScreen extends StatelessWidget {
                       _currentIndex = newIndex;
                     }
                   },
-                  // loadedAppData: loadedAppData,
                 );
               },
             ),
@@ -49,15 +49,21 @@ class HomeScreen extends StatelessWidget {
         body: connectivityProvider.networkState != ConnectivityStatus.Offline
             ? Consumer<PostsProvider>(
                 builder: (context, postsProvider, child) {
-                  return postsProvider.posts.isNotEmpty
-                      ? ListView.builder(
-                          itemCount: postsProvider.posts.length,
-                          itemBuilder: (context, index) =>
-                              CardWidget(post: postsProvider.posts[index]),
-                        )
+                  return postsProvider.viewState == ViewState.Done
+                      ? postsProvider.posts.isNotEmpty
+                          ? ListView.builder(
+                              itemCount: postsProvider.posts.length,
+                              itemBuilder: (context, index) =>
+                                  CardWidget(post: postsProvider.posts[index]),
+                            )
+                          : Center(
+                              child: Text(
+                                  "No data, you can choose item from side menu"),
+                            )
                       : Center(
-                          child: Text(
-                              "No data, you can choose item from side menu"),
+                          child: CircularProgressIndicator(
+                            color: LoadedAppData.appColors.textColor,
+                          ),
                         );
                 },
               )
